@@ -1,0 +1,14 @@
+services:
+  ppurio-server:
+    restart: unless-stopped
+    build:
+      context: .
+    ports:
+      - "7936:5000"
+    environment:
+      GOOGLE_APP_SCRIPT_API_KEY: "ebeba5bb1e793cc703e5e09120d3e6d3dabd158d527130157ae1850efb030543"
+      PPURIO_API_KEY: "999ab918ee6acdb9056816b139c29644f00d149196a0f75c7437da5c18e60dfe"
+      PPURIO_ACCOUNT: "yunion"
+      SENDER_PROFILE: "@야놀자인터파크노조"
+    volumes:
+      - ./logs:/app/logs

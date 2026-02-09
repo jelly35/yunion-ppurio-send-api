@@ -1,0 +1,27 @@
+# Environment variables
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+
+# SQLite
+*.db
+
+# Logs
+logs/
+
+# IDE
+.vscode/
+.idea/
+
+# Docker
+server/data/
+
+# OS
+.DS_Store
+Thumbs.db

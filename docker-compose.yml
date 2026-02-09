@@ -1,0 +1,11 @@
+services:
+  ppurio-server:
+    restart: unless-stopped
+    build:
+      context: ./server
+    ports:
+      - "${SERVER_PORT:-7936}:5000"
+    env_file:
+      - .env
+    volumes:
+      - ./server/data:/app/data
