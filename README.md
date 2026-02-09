@@ -8,7 +8,9 @@
 Google Form 제출
       ↓
 Google Apps Script (appscript.gs)
-      ↓ POST /send_message (x-api-key 인증)
+      ↓ POST /send_message (HTTPS, x-api-key 인증)
+Caddy (리버스 프록시, :443)
+      ↓ localhost:7936
 FastAPI 서버 (Docker)
       ↓
 뿌리오 API → 카카오톡 알림톡 발송
@@ -96,15 +98,21 @@ curl -X POST http://localhost:7936/send_message \
 
 ## HTTPS 적용 (Caddy 리버스 프록시)
 
-### Caddy 설치 (Oracle Linux / CentOS)
+### Caddy 설치 (Ubuntu)
 
 ```bash
-sudo yum install -y yum-utils
-sudo yum-config-manager --add-repo https://yum.caddyserver.com/caddy.repo
-sudo yum install -y caddy
+sudo apt install -y debian-keyring debian-archive-keyring apt-transport-https curl
+curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | sudo gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
+curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | sudo tee /etc/apt/sources.list.d/caddy-stable.list
+sudo apt update
+sudo apt install -y caddy
 ```
 
 ### Caddyfile 설정
+
+```bash
+sudo vi /etc/caddy/Caddyfile
+```
 
 ```
 ppurio.y-union.org {
@@ -112,13 +120,32 @@ ppurio.y-union.org {
 }
 ```
 
+### 방화벽 설정
+
+```bash
+# HTTPS/HTTP 허용 (인증서 발급에 80 필요)
+sudo ufw allow 80/tcp
+sudo ufw allow 443/tcp
+
+# 7936 외부 접근 차단 (Caddy를 통해서만 접근)
+sudo ufw deny 7936/tcp
+sudo ufw reload
+```
+
+### Caddy 실행
+
 ```bash
 sudo systemctl enable caddy
 sudo systemctl start caddy
 ```
 
 Caddy가 자동으로 Let's Encrypt SSL 인증서를 발급하고 갱신합니다.
-HTTPS 적용 후 Google Apps Script의 `CONFIG.API_URL`을 `https://ppurio.y-union.org/send_message`로 변경하세요.
+
+### 확인
+
+```bash
+curl -v https://ppurio.y-union.org/health
+```
 
 ## 환경변수
 

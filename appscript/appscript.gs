@@ -5,7 +5,7 @@
 
 // 설정값
 var CONFIG = {
-  API_URL: "http://ppurio.y-union.org:7936/send_message",
+  API_URL: "https://ppurio.y-union.org/send_message",
   API_KEY: "ebeba5bb1e793cc703e5e09120d3e6d3dabd158d527130157ae1850efb030543",
   TEMPLATE_ID: "ppur_2026012921485212712316904",
   SLACK_WEBHOOK_URL:
