@@ -3,7 +3,7 @@ import logging
 import random
 import string
 import time
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 
 import httpx
 
@@ -43,15 +43,15 @@ class PpurioService:
 
         data = response.json()
         self._token = data["token"]
-        # 뿌리오 토큰 만료: "yyyyMMddHHmmss" 형식 문자열 → epoch seconds
+        # 뿌리오 토큰 만료: "yyyyMMddHHmmss" 형식 (KST) → epoch seconds
         expired_str = data.get("expired", "")
+        KST = timezone(timedelta(hours=9))
         try:
-            expired_dt = datetime.strptime(expired_str, "%Y%m%d%H%M%S")
+            expired_dt = datetime.strptime(expired_str, "%Y%m%d%H%M%S").replace(tzinfo=KST)
             self._token_expires_at = expired_dt.timestamp()
         except (ValueError, TypeError):
-            # 파싱 실패 시 24시간 후 만료로 설정
             self._token_expires_at = time.time() + 86400
-        logger.info("뿌리오 토큰 발급 성공 (만료: %s)", expired_str)
+        logger.info("뿌리오 토큰 발급 성공 (만료: %s KST)", expired_str)
         return self._token
 
     async def send_kakao(
